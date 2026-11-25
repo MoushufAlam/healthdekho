@@ -15,6 +15,21 @@ If no step files exist yet, we are at Step 1.
 - Keep explanations short and beginner-friendly. User is learning; no giant dumps of code without explanation.
 - Be token-efficient. No long answers.
 - Do not ask to draw images/diagrams unless user permits; ask before any token-heavy task.
+- **Never commit or push** unless the user asks.
+- **Screenshots:** when something is worth evidencing, tell the user exactly when to take it, what must be visible,
+  and the path: `evidence/slideNN-name/ID-description.png`. Give one screenshot at a time and wait for "done".
+  Folder map: slide03-summary, slide05-ui, slide06-validation, slide07-ai, slide08-registration, slide09-payment,
+  slide10-search, slide11-database, slide12-tests, slide13-coverage, slide14-aws, slide15-aws-runtime.
+- **Step docs style:** the user knows Java + Spring Data JPA only (not Flyway, Spring Security, JWT, Spring AI).
+  Structure each `stepN.readme.md`: one-line summary -> Part 1 Theory (from zero, with analogies and small diagrams) ->
+  Part 2 What we built -> Part 3 Run and check -> Part 4 Screenshots (if any) -> Quick recap + next step.
+  Keep it clean, not cluttered.
+- **Code comments:** write them like a real developer: short "why" notes on business rules, gotchas and
+  non-obvious choices (e.g. `// may go up to scheduledAmount + 10% when the late-payment penalty applies`).
+  Not zero comments, not tutorial-style explanations, not obvious ones. Teaching goes in the step readme.
+- **Flyway:** never edit a migration that already ran (even comments); add a new `V{n}__...sql` instead.
+- Lombok: use `@Getter @Setter @NoArgsConstructor` on entities, never `@Data`. Only `@ManyToOne(LAZY)` relations
+  (no bidirectional lists) unless a step truly needs one.
 
 ## Decisions already made
 - Java 21, Spring Boot 3.5.7, Maven, PostgreSQL, Flyway, Spring Security + JWT, Spring AI with Google Gemini.

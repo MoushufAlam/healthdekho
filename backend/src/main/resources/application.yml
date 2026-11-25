@@ -1,18 +1,13 @@
-# Shared settings for all environments.
-# Environment-specific values live in application-dev.yml / application-prod.yml.
-
 spring:
   application:
     name: healthdekho
   profiles:
-    # Default to dev; override with SPRING_PROFILES_ACTIVE=prod
     active: ${SPRING_PROFILES_ACTIVE:dev}
 
   jpa:
-    # Flyway owns the schema; Hibernate only checks entities match the tables.
     hibernate:
+      # schema is owned by Flyway; Hibernate only checks it
       ddl-auto: validate
-    # Don't keep DB sessions open during web rendering (avoids hidden lazy-loading queries).
     open-in-view: false
     properties:
       hibernate:

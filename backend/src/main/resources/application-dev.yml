@@ -1,9 +1,7 @@
-# Local development profile.
-# Credentials come ONLY from environment variables (DB_USERNAME, DB_PASSWORD) - never commit them.
-
 spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/healthdekho}
+    # credentials come from env vars, never commit them
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 

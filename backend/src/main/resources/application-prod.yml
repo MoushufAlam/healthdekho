@@ -1,6 +1,3 @@
-# Production profile (used later for AWS, Step 13).
-# Every value comes from environment variables - nothing secret in the repo.
-
 spring:
   datasource:
     url: ${DB_URL}
