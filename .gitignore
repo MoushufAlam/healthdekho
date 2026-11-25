@@ -1,0 +1,45 @@
+# Secrets
+.env
+.env.*
+*.pem
+application-local.yml
+application-secret.yml
+
+# Claude Code personal settings
+.claude/settings.local.json
+
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.log
+hs_err_pid*
+
+# Node / React
+node_modules/
+build/
+dist/
+.vite/
+npm-debug.log*
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test / coverage output (keep screenshots in evidence/)
+coverage/
+
+# BMAD engine (reinstall with: npx bmad-method install). Keep _bmad-output/ tracked.
+_bmad/
+.agents/
+.claude/
+.github/
