@@ -1,0 +1,20 @@
+# Production profile (used later for AWS, Step 13).
+# Every value comes from environment variables - nothing secret in the repo.
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    show-sql: false
+
+management:
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    root: INFO

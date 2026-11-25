@@ -49,7 +49,7 @@ Layers: Controller (HTTP) | Service (rules) | Repository (DB) | Entity (tables) 
 - [x] Build tool: Maven
 - [x] AI provider for Spring AI: Google Gemini (free key, stored in env var)
 - [x] Auth style: JWT
-- [x] Database tooling: Flyway migrations + Docker Compose Postgres (port 5433)
+- [x] Database tooling: Flyway migrations + local Postgres (port 5432, db `healthdekho`); Docker Compose optional later (Step 13)
 - [x] Duplicate rule: one policy per customer per product (matches `UQ(customer_id, product_id)`)
 - [ ] Is BMAD required? Confirm with trainer; PPT only asks for BMAD-style docs (we use BMAD for planning docs only; code is written step by step)
 
