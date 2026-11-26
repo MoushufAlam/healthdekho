@@ -26,6 +26,8 @@ Layers: Controller (HTTP) | Service (rules) | Repository (DB) | Entity (tables) 
 
 ## Roadmap
 
+**Full status and handoff:** see `HANDOFF.md`.
+
 **Progress (2026-11-26):** Steps 1–12 done (backend: 85 tests passing, service coverage 96.9%; React frontend in `frontend/`).
 FR-4 and FR-5 are optional (not evaluated) but still built, tagged `OPTIONAL: FR-4/5`.
 Next: Step 13 (Docker + AWS). Screenshots for Steps 4–12 are pending; see `docs/screenshot-checklist.md`.

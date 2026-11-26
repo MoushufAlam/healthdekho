@@ -1,7 +1,7 @@
 # HealthDekho – Instructions for Claude Code
 
 ## At the start of EVERY session (mandatory)
-1. Read `ROADMAP.md`.
+1. Read `ROADMAP.md` and `HANDOFF.md` (full status, preferences, what's left, deployment plan).
 2. Read the **latest** `docs/steps/stepN.readme.md` (highest N) to see where we left off.
 3. Tell the user in 2-3 lines: last completed step, what is next. Then wait for "go".
 If no step files exist yet, we are at Step 1.
