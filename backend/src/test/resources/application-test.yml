@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    # separate DB so tests never touch dev data; Flyway builds and seeds it on first run
+    url: ${TEST_DB_URL:jdbc:postgresql://localhost:5432/healthdekho_test}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  ai:
+    google:
+      genai:
+        api-key: not-configured
+
+app:
+  jwt:
+    secret: test-only-secret-key-that-is-at-least-32-bytes-long

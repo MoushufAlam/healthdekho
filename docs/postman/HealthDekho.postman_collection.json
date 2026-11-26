@@ -1,0 +1,350 @@
+{
+  "info": {
+    "name": "HealthDekho API",
+    "description": "All backend endpoints with success and error cases. Run '1. Auth' first: the login requests save the tokens into collection variables. Requests marked [needs demo script] need docs/demo/demo-overdue-policy.sql to be run first.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "tokenAarav", "value": "" },
+    { "key": "tokenMeera", "value": "" },
+    { "key": "tokenRohan", "value": "" },
+    { "key": "newPolicyNumber", "value": "" },
+    { "key": "recItemId", "value": "" },
+    { "key": "recProductId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Auth (FR-1A)",
+      "item": [
+        {
+          "name": "AUTH-01 Login Aarav (saves token)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('200 OK', () => pm.response.to.have.status(200));",
+            "pm.collectionVariables.set('tokenAarav', pm.response.json().accessToken);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"aarav.sharma@example.com\",\n  \"password\": \"Password@123\"\n}" },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Login Meera (saves token)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.collectionVariables.set('tokenMeera', pm.response.json().accessToken);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"meera.iyer@example.com\",\n  \"password\": \"Password@123\"\n}" },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Login Rohan (saves token)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.collectionVariables.set('tokenRohan', pm.response.json().accessToken);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"rohan.verma@example.com\",\n  \"password\": \"Password@123\"\n}" },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "AUTH-02 Wrong password -> 401",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"aarav.sharma@example.com\",\n  \"password\": \"wrong-password\"\n}" },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "AUTH-04 Invalid body -> 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"\"\n}" },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "AUTH-06 Dashboard without token -> 401",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/dashboard" }
+        }
+      ]
+    },
+    {
+      "name": "2. Dashboard & products (FR-1B, FR-1C)",
+      "item": [
+        {
+          "name": "CUST-01 My profile (Aarav)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/customers/me" }
+        },
+        {
+          "name": "DASH-01 Dashboard (Aarav)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/dashboard" }
+        },
+        {
+          "name": "DASH-02 Dashboard with no policies (Rohan)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenRohan}}" }], "url": "{{baseUrl}}/api/dashboard" }
+        },
+        {
+          "name": "PROD-01 Available products (Aarav - excludes Secure Term)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/products/available" }
+        }
+      ]
+    },
+    {
+      "name": "3. Registration (FR-3)",
+      "item": [
+        {
+          "name": "REG-01 Preview Smart Savings (Aarav)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/policies/preview?productId=203" }
+        },
+        {
+          "name": "REG-03 Register Smart Savings (Aarav) -> 201",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "pm.collectionVariables.set('newPolicyNumber', pm.response.json().policyNumber);"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": 203\n}" },
+            "url": "{{baseUrl}}/api/policies"
+          }
+        },
+        {
+          "name": "REG-04 Register same product again -> 409",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": 201\n}" },
+            "url": "{{baseUrl}}/api/policies"
+          }
+        },
+        {
+          "name": "REG-05 Start date in the past -> 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": 202,\n  \"startDate\": \"2020-01-01\"\n}" },
+            "url": "{{baseUrl}}/api/policies"
+          }
+        },
+        {
+          "name": "REG-07 Unknown product -> 404",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": 999\n}" },
+            "url": "{{baseUrl}}/api/policies"
+          }
+        },
+        {
+          "name": "REG-07b Missing productId -> 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": "{{baseUrl}}/api/policies"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Policy lookup & payments (FR-4)",
+      "item": [
+        {
+          "name": "PAY-01 Policy details HDP-2026-0001",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/policies/HDP-2026-0001" }
+        },
+        {
+          "name": "PAY-02 Installment schedule",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/policies/HDP-2026-0001/installments" }
+        },
+        {
+          "name": "PAY-03 Partial payment (installment 3, 500) -> 201",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"paymentMethod\": \"UPI\",\n  \"installments\": [\n    { \"installmentId\": 4003, \"amount\": 500.00 }\n  ]\n}" },
+            "url": "{{baseUrl}}/api/policies/HDP-2026-0001/payments"
+          }
+        },
+        {
+          "name": "PAY-04 Pay two installments at once -> 201",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"paymentMethod\": \"CARD\",\n  \"installments\": [\n    { \"installmentId\": 4002, \"amount\": 750.00 },\n    { \"installmentId\": 4005, \"amount\": 1250.00 }\n  ]\n}" },
+            "url": "{{baseUrl}}/api/policies/HDP-2026-0001/payments"
+          }
+        },
+        {
+          "name": "PAY-05 Overpayment -> 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"paymentMethod\": \"UPI\",\n  \"installments\": [\n    { \"installmentId\": 4006, \"amount\": 5000.00 }\n  ]\n}" },
+            "url": "{{baseUrl}}/api/policies/HDP-2026-0001/payments"
+          }
+        },
+        {
+          "name": "PAY-06 Already paid installment -> 409",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"paymentMethod\": \"UPI\",\n  \"installments\": [\n    { \"installmentId\": 4001, \"amount\": 100.00 }\n  ]\n}" },
+            "url": "{{baseUrl}}/api/policies/HDP-2026-0001/payments"
+          }
+        },
+        {
+          "name": "PAY-09 ISOLATION Meera views Aarav's policy -> 404",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenMeera}}" }], "url": "{{baseUrl}}/api/policies/HDP-2026-0001" }
+        },
+        {
+          "name": "PAY-09b ISOLATION Meera pays Aarav's policy -> 404",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenMeera}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"paymentMethod\": \"UPI\",\n  \"installments\": [\n    { \"installmentId\": 4003, \"amount\": 100.00 }\n  ]\n}" },
+            "url": "{{baseUrl}}/api/policies/HDP-2026-0001/payments"
+          }
+        },
+        {
+          "name": "Payment history",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/policies/HDP-2026-0001/payments" }
+        },
+        {
+          "name": "PAY-08 [needs demo script] Overdue schedule (Rohan)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenRohan}}" }], "url": "{{baseUrl}}/api/policies/HDP-DEMO-0001/installments" }
+        },
+        {
+          "name": "PAY-07a [needs demo script] Late payment without penalty -> 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenRohan}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"paymentMethod\": \"UPI\",\n  \"installments\": [\n    { \"installmentId\": 9001, \"amount\": 7500.00 }\n  ]\n}" },
+            "url": "{{baseUrl}}/api/policies/HDP-DEMO-0001/payments"
+          }
+        },
+        {
+          "name": "PAY-07b [needs demo script] Late payment with 10% penalty -> 201",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenRohan}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"paymentMethod\": \"UPI\",\n  \"installments\": [\n    { \"installmentId\": 9001, \"amount\": 8250.00 }\n  ]\n}" },
+            "url": "{{baseUrl}}/api/policies/HDP-DEMO-0001/payments"
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Search (FR-5)",
+      "item": [
+        {
+          "name": "SRCH-01 By policy number",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/policies/search?policyNumber=HDP-2026-0001" }
+        },
+        {
+          "name": "SRCH-03 By policy number + date of birth",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/policies/search?policyNumber=HDP-2026-0001&dateOfBirth=1990-04-15" }
+        },
+        {
+          "name": "SRCH-04 By customer name",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/policies/search?customerName=aarav" }
+        },
+        {
+          "name": "SRCH-05 By name, paginated (size=1)",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/policies/search?customerName=aarav&page=0&size=1" }
+        },
+        {
+          "name": "SRCH-04b No match -> empty + message",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/policies/search?customerName=Meera" }
+        },
+        {
+          "name": "SRCH-02 ISOLATION another customer's policy -> 404",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/policies/search?policyNumber=HDP-2026-0002" }
+        },
+        {
+          "name": "SRCH-07 Date of birth alone -> 400",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenAarav}}" }], "url": "{{baseUrl}}/api/policies/search?dateOfBirth=1990-04-15" }
+        }
+      ]
+    },
+    {
+      "name": "6. AI recommendations (FR-2)",
+      "item": [
+        {
+          "name": "AI-01/02 Recommend for Rohan (AI, or fallback without key)",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('201 Created', () => pm.response.to.have.status(201));",
+            "const first = pm.response.json().recommendations[0];",
+            "if (first) { pm.collectionVariables.set('recItemId', first.recommendationItemId); pm.collectionVariables.set('recProductId', first.productId); }"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenRohan}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"insuranceGoals\": \"Health coverage for self and parents\",\n  \"preferredTerm\": \"1 year\",\n  \"preferredPolicyType\": \"HEALTH\"\n}" },
+            "url": "{{baseUrl}}/api/recommendations"
+          }
+        },
+        {
+          "name": "REG-08 Register the top recommendation (Rohan) -> 201",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenRohan}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"productId\": {{recProductId}},\n  \"recommendationItemId\": {{recItemId}}\n}" },
+            "url": "{{baseUrl}}/api/policies"
+          }
+        },
+        {
+          "name": "AI-05 Empty request -> 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenRohan}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": "{{baseUrl}}/api/recommendations"
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Error handling (2.1)",
+      "item": [
+        {
+          "name": "ERR-01 Invalid enum value -> 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenRohan}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"preferredPolicyType\": \"CAR\"\n}" },
+            "url": "{{baseUrl}}/api/recommendations"
+          }
+        },
+        {
+          "name": "ERR-02 Malformed JSON -> 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{tokenRohan}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{ bad json" },
+            "url": "{{baseUrl}}/api/recommendations"
+          }
+        },
+        {
+          "name": "ERR-03 Unknown URL -> 404",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{tokenRohan}}" }], "url": "{{baseUrl}}/api/does-not-exist" }
+        },
+        {
+          "name": "ERR-04 Wrong HTTP method -> 405",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{tokenRohan}}" }], "url": "{{baseUrl}}/api/dashboard" }
+        }
+      ]
+    }
+  ]
+}

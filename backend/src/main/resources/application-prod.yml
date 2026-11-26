@@ -15,3 +15,7 @@ management:
 logging:
   level:
     root: INFO
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}

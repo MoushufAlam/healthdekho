@@ -26,6 +26,12 @@ Layers: Controller (HTTP) | Service (rules) | Repository (DB) | Entity (tables) 
 
 ## Roadmap
 
+**Progress (2026-11-26):** Steps 1–12 done (backend: 85 tests passing, service coverage 96.9%; React frontend in `frontend/`).
+FR-4 and FR-5 are optional (not evaluated) but still built, tagged `OPTIONAL: FR-4/5`.
+Next: Step 13 (Docker + AWS). Screenshots for Steps 4–12 are pending; see `docs/screenshot-checklist.md`.
+Live Gemini response still needs a `GEMINI_API_KEY` (fallback works without it).
+Guides: `docs/guides/backend-flow-explained.md` (every endpoint's flow), `docs/guides/concepts-explained.md` (every concept).
+
 | Step | Goal | Covers | Output you can verify |
 |---|---|---|---|
 | 0 | Prerequisites: Java 21, Maven, Postgres, IDE, Git | - | `java -version` shows 21; DB reachable |
@@ -35,8 +41,8 @@ Layers: Controller (HTTP) | Service (rules) | Repository (DB) | Entity (tables) 
 | 4 | Authentication with Spring Security (login, BCrypt, JWT) | FR-1A | Login works; wrong password gives 401 |
 | 5 | Dashboard + available products (stream filtering, DTO records) | FR-1B, 1C | Each customer sees only own policies |
 | 6 | Policy registration: eligibility, duplicate rule, maturity date, BigDecimal totals, installment schedule, `@Transactional` | FR-3 | Policy + schedule saved; bad input rejected |
-| 7 | Premium payment: lookup, partial pay, 10% penalty after grace, no duplicate/over-payment, status switch expression | FR-4 | Payment statuses update correctly |
-| 8 | Policy search with validation + pagination | FR-5 | Search by ID / name / ID+DOB |
+| 7 | Premium payment: lookup, partial pay, 10% penalty after grace, no duplicate/over-payment, status switch expression | FR-4 | Payment statuses update correctly; another customer's policy -> 404 |
+| 8 | Policy search with validation + pagination | FR-5 | Search by ID / name / ID+DOB, own policies only; another customer's policy -> 404 |
 | 9 | AI recommendations: Spring AI, prompt, parse, filter to DB products, persist, fallback | FR-2 | Recommendations saved; AI failure -> fallback |
 | 10 | Global exception handling + correct HTTP codes | 2.1 | Clean JSON errors (400/401/404/409) |
 | 11 | Automated tests + JaCoCo coverage (service >= 80%) | PPT | Passing suite + coverage report |
